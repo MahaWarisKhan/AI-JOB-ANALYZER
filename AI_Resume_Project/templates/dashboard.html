@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CareerLens | Resume Dashboard</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <aside class="sidebar">
+        <a class="brand" href="/">
+            <span class="brand-icon">C</span>
+            CareerLens<span class="brand-dot">.</span>
+        </a>
+
+        <p class="nav-label">WORKSPACE</p>
+
+        <nav aria-label="Main navigation">
+            <a class="nav-link active" href="/">Dashboard</a>
+            <a class="nav-link" href="#upload">Upload resume</a>
+            <a class="nav-link" href="#analysis">Resume analysis</a>
+            <a class="nav-link" href="#jobs">Job recommendations</a>
+        </nav>
+
+        <div class="sidebar-note">
+            <span class="small-label">YOUR NEXT CHAPTER</span>
+            <h3>Make your skills visible.</h3>
+            <p>Explore your resume and prepare for your next opportunity.</p>
+        </div>
+
+        <div class="profile">
+            <span class="avatar">M</span>
+            <div>
+                <strong>Maha</strong>
+                <small>Candidate workspace</small>
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        <header class="topbar">
+            <span>Workspace <span class="separator">/</span> Dashboard</span>
+            <span class="project-label">FINAL YEAR PROJECT</span>
+        </header>
+
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">YOUR CAREER, IN FOCUS</p>
+                <h1>A clearer view of your potential.</h1>
+                <p class="muted">
+                    Start with your resume. Discover the skills it highlights.
+                </p>
+            </div>
+            <a class="button secondary" href="#upload">Analyze my resume ↗</a>
+        </section>
+
+        <section class="hero">
+            <div>
+                <span class="hero-label">FROM RESUME TO OPPORTUNITY</span>
+                <h2>Your next step starts<br>with what you know.</h2>
+                <p>
+                    Bring your experience into focus with a simple,
+                    structured view of your resume.
+                </p>
+                <a class="button white-button" href="#upload">
+                    Get started <span>→</span>
+                </a>
+            </div>
+
+            <div class="hero-art" aria-hidden="true">
+                <div class="orbit orbit-one"></div>
+                <div class="orbit orbit-two"></div>
+                <div class="resume-card">
+                    <div class="mini-avatar"></div>
+                    <div class="line wide"></div>
+                    <div class="line short"></div>
+                    <div class="mini-divider"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line short"></div>
+                    <div class="mini-tags">
+                        <span>Skills</span><span>Experience</span>
+                    </div>
+                </div>
+                <span class="floating-label">A fresh perspective ↗</span>
+            </div>
+        </section>
+
+        <section class="stats" aria-label="Current analysis summary">
+                    <article class="stat">
+            <span>Sample roles compared</span>
+            <strong>{{ recommendations | default([]) | length }}</strong>
+            <small>Ranked by required-skill coverage</small>
+        </article>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel" id="upload">
+                <div class="section-title">
+                    <span class="step">01</span>
+                    <div>
+                        <h2>Upload your resume</h2>
+                        <p>Let's get to know your experience.</p>
+                    </div>
+                </div>
+
+                {% if error %}
+                    <div class="error" role="alert">{{ error }}</div>
+                {% endif %}
+
+                <form method="post" action="/" enctype="multipart/form-data"target="_self">
+                    <div class="upload-area">
+                        <span class="upload-icon" aria-hidden="true">↑</span>
+                        <h3>Your career story starts here</h3>
+                        <p>Select a resume from your computer.</p>
+
+                        <label class="file-label" for="resume">
+                            Choose your resume
+                        </label>
+                        <input id="resume" type="file" name="resume"
+                               accept=".pdf,.docx" required>
+                        <small>PDF or DOCX · Maximum 5 MB</small>
+                    </div>
+
+                    <button class="button primary full-width" type="submit">
+                    Analyze resume <span>→</span>
+                    </button>
+                </form>
+
+                <p class="privacy-note">
+                    Resume files are processed for this request and are
+                    not saved by this application.
+                </p>
+            </section>
+
+            <section class="panel" id="analysis">
+                <div class="section-title">
+                    <span class="step">02</span>
+                    <div>
+                        <h2>Your resume insights</h2>
+                        <p>A closer look at your skills.</p>
+                    </div>
+                </div>
+
+                {% if text %}
+                    <div class="success-status">✓ Resume processed</div>
+                    <p class="filename">{{ filename }}</p>
+
+                    <h3 class="subheading">Detected skills</h3>
+                    <div class="skills">
+                        {% for skill in skills %}
+                            <span class="skill">{{ skill }}</span>
+                        {% else %}
+                            <p class="muted">
+                                No skills from our starter list were found.
+                                This does not mean you have no skills.
+                            </p>
+                        {% endfor %}
+                    </div>
+
+                    <p class="method-note">
+                        This first version detects keywords. It does not
+                        assess your proficiency.
+                    </p>
+
+                    <div class="resume-details">
+    <h3 class="subheading">Education mentioned</h3>
+
+    {% if education %}
+        <ul class="detail-list">
+            {% for item in education %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="method-note">
+            No education details were identified.
+            Check the extracted text below.
+        </p>
+    {% endif %}
+
+    <h3 class="subheading">Experience section</h3>
+
+    {% if experience %}
+        <ul class="detail-list">
+            {% for item in experience %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="method-note">
+            An experience section could not be identified.
+            This does not mean you have no experience.
+        </p>
+    {% endif %}
+
+    <p class="method-note">
+        These details are extracted using text patterns.
+        Resume layouts can affect the results.
+    </p>
+</div>
+                    <details>
+                        <summary>View extracted resume text</summary>
+                        <pre>{{ text }}</pre>
+                    </details>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon" aria-hidden="true">⌕</div>
+                        <h3>A little insight goes a long way.</h3>
+                        <p>
+                            Upload your resume to see its text
+                            and detected skills here.
+                        </p>
+                        <span class="empty-tag">Waiting for your resume</span>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+        <section class="panel jobs-panel" id="jobs">
+    <div class="section-title">
+        <span class="step">03</span>
+        <div>
+            <h2>Job recommendations</h2>
+            <p>Explore sample roles based on your detected skills.</p>
+        </div>
+    </div>
+
+    <p class="method-note">
+        These are sample roles, not live vacancies.
+        Match scores show required-skill coverage, not hiring probability.
+        A missing skill means it was not detected in your resume.
+    </p>
+
+    {% if recommendations %}
+        <div class="job-grid">
+            {% for job in recommendations %}
+                <article class="job-card">
+                    <div class="job-header">
+                        <span class="job-type">{{ job.type }}</span>
+                        <span class="match-score">
+                            {{ job.score }}% match
+                        </span>
+                    </div>
+
+                    <h3>{{ job.title }}</h3>
+                    <p class="job-summary">
+                        {{ job.matched | length }} of
+                        {{ job.skills | length }} required skills detected
+                    </p>
+
+                    <progress value="{{ job.score }}" max="100"
+                              aria-label="{{ job.title }} skill coverage">
+                        {{ job.score }}%
+                    </progress>
+
+                    <h4>Matched skills</h4>
+                    <div class="skills">
+                        {% for skill in job.matched %}
+                            <span class="skill matched">{{ skill }}</span>
+                        {% else %}
+                            <span class="job-summary">
+                                No required skills detected.
+                            </span>
+                        {% endfor %}
+                    </div>
+
+                    <h4>Not detected in your resume</h4>
+                    <div class="skills">
+                        {% for skill in job.missing %}
+                            <span class="skill missing">{{ skill }}</span>
+                        {% else %}
+                            <span class="skill matched">
+                                All required skills detected
+                            </span>
+                        {% endfor %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>Find where your skills fit.</h3>
+            <p>Upload your resume to compare it with our sample jobs.</p>
+        </div>
+    {% endif %}
+</section>
+        <footer>CareerLens · AI-Based Resume Analysis and Job Recommendation System</footer>
+    </main>
+</body>
+</html>
